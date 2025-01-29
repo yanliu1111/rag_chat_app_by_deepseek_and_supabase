@@ -16,6 +16,7 @@ Build RAG (Retrieval-Augmented Generation) Chat App" by integrating Deepseek V3 
 
 - Python 3.10
 - Packages `pip install streamlit requests python-dotenv supabase`
+- Read DeepSeek API documentation for python `https://api-docs.deepseek.com/api/create-chat-completion`
 
 ## Features
 
