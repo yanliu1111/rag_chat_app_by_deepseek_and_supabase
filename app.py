@@ -37,7 +37,7 @@ def load_chat_history(project_name):
         response = supabase.table("messages") \
             .select("*") \
             .eq("project", project_name) \
-            .order("timestamp", ascending=True) \
+            .order("timestamp") \
             .execute()
 
         # Debugging: Check the raw response
@@ -93,7 +93,8 @@ if projects == "Add New Project":
     if st.sidebar.button("Add Project"):
         if new_project_name:
             st.session_state["projects"].append(new_project_name)
-            st.session_state[new_project_name] = []
+            st.session_state[new_project_name] = []  # Initialize chat history
+            st.session_state["current_project"] = new_project_name  # Set as current project
             st.rerun()
 else:
     if st.sidebar.button("Delete Project"):
@@ -115,10 +116,15 @@ if st.session_state["current_project"]:
     
     if user_input:
         project_context = st.session_state.get(st.session_state["current_project"], [])
+        if not project_context:
+            project_context = [{"role": "system", "content": "You are a helpful assistant."}]
         
-        # Debugging: Check the project context
-        print(f"Project Context for {st.session_state['current_project']}: {project_context}")  # Debugging
-
+        # Debug: Print the project context and request payload
+        print(f"Project Context for {st.session_state['current_project']}: {project_context}")
+        print(
+           f"Request Payload: {json.dumps({'messages': project_context + [{'content': user_input, 'role': 'user'}], 'model': 'deepseek-chat', 'max_tokens': 2048}, indent=2)}"
+        )
+        
         # Call DeepSeek API
         try:
             response = requests.post(
@@ -142,8 +148,16 @@ if st.session_state["current_project"]:
             if response.status_code == 200:
                 if response.text.strip():  # Check if the response body is not empty
                     try:
-                        response_data = response.json()
-                        response_text = response_data.get("choices", [{}])[0].get("message", {}).get("content", "No response received.")
+                        # Debug place for empty json response, check if choices exits
+                        try:
+                            response_data = response.json()
+                            choices = response_data.get("choices", [])
+                            if choices:
+                                response_text = choices[0].get("message", {}).get("content", "No response received.")
+                            else:
+                                response_text = "No valid choices in response."
+                        except json.JSONDecodeError as e:
+                            response_text = f"JSON Error: {e}. Raw response: {response.text}"
                         
                         # Save to Supabase
                         save_chat_history("user", user_input)
@@ -161,9 +175,6 @@ if st.session_state["current_project"]:
                     st.error("Empty response body received.")
             else:
                 st.error(f"API Error: {response.status_code} - {response.text}")
-        
-        except json.JSONDecodeError as e:
-            st.error(f"Error decoding JSON: {e}. Raw response: {response.text}")
         except Exception as e:
             st.error(f"An error occurred while calling the API: {e}")
 
