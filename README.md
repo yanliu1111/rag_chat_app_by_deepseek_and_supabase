@@ -1,5 +1,11 @@
 # Build RAG Chat App by Deepseek V3 🐋 and Supabase ⚡
 
+<img 
+    style="width: 100%;"
+    src="workflow.jpg" 
+    alt="roadmap">
+</img> <br>
+
 ## Overview
 
 Build RAG (Retrieval-Augmented Generation) Chat App" by integrating Deepseek V3 and Supabase, built base on a simple Streamlit application that provides an interactive user interface with a sidebar for navigation and content display. Separate projects with unique chats.
