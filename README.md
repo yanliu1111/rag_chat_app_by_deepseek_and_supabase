@@ -1,8 +1,13 @@
-# Build RAG Chat App by Supabase and Deepseek V3
+# Build RAG Chat App by Deepseek V3 🐋 and Supabase
 
 ## Overview
 
 Build RAG (Retrieval-Augmented Generation) Chat App" by integrating Deepseek V3 and Supabase, built base on a simple Streamlit application that provides an interactive user interface with a sidebar for navigation and content display. Separate projects with unique chats.
+
+## Technologies
+
+- Python 3.10
+- Packages `pip install streamlit requests python-dotenv supabase`
 
 ## Features
 
@@ -51,7 +56,7 @@ YOUR_SITE_NAME=your_site_name
 To start the Streamlit application, run the following command in your terminal:
 
 ```
-streamlit run src/app.py
+streamlit run app.py
 ```
 
 ## Usage
