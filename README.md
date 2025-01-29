@@ -53,8 +53,8 @@ To run this application, you need to have Python installed on your machine. Foll
 1. Clone the repository:
 
    ```
-   git clone https://github.com/yourusername/rag-2.0.git
-   cd rag-2.0
+   git clone https://github.com/yanliu1111/rag_chat_app_by_deepseek_and_supabase.git
+   cd rag_chat_app_by_deepseek_and_supabase
    ```
 
 2. Install the required dependencies:
