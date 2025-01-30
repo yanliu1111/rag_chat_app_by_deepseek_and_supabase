@@ -70,9 +70,3 @@ urllib3==2.3.0
 watchdog==6.0.0
 websockets==13.1
 yarl==1.18.3
-CREATE TABLE chat_histories (
-    id SERIAL PRIMARY KEY,
-    project_name TEXT NOT NULL,
-    chat_history JSONB NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
