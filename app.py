@@ -4,6 +4,9 @@ import json
 from dotenv import load_dotenv
 import os
 from supabase import create_client, Client
+from document_processor import upload_document, retrieve_relevant_chunks, generate_answer  # Import the functions
+from sentence_transformers import SentenceTransformer
+import numpy as np
 
 # Load environment variables from .env file
 load_dotenv()
@@ -16,6 +19,9 @@ SUPABASE_API_KEY = os.getenv("SUPABASE_API_KEY")
 
 # Initialize Supabase client
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_API_KEY)
+
+# Initialize Sentence Transformer model
+model = SentenceTransformer('all-MiniLM-L6-v2')
 
 # Streamlit UI
 st.set_page_config(page_title="RAG 2.0", page_icon="🤖", layout="wide")
@@ -30,6 +36,25 @@ projects = st.sidebar.selectbox("Select a Project", ["Add New Project"] + st.ses
 
 # Store the current project in session state
 st.session_state["current_project"] = projects if projects != "Add New Project" else None
+
+# Add or delete projects
+if projects == "Add New Project":
+    new_project_name = st.sidebar.text_input("Enter new project name:")
+    if st.sidebar.button("Add Project"):
+        if new_project_name:
+            st.session_state["projects"].append(new_project_name)
+            st.session_state[new_project_name] = []  # Initialize chat history
+            st.session_state["current_project"] = new_project_name  # Set as current project
+            st.rerun()
+else:
+    if st.sidebar.button("Delete Project"):
+        if delete_project(projects):
+            st.session_state["projects"].remove(projects)
+            del st.session_state[projects]
+            st.rerun()
+
+# Call the upload_document function to handle document uploads
+upload_document()
 
 # Function to load chat history from Supabase
 def load_chat_history(project_name):
@@ -87,22 +112,6 @@ def delete_project(project_name):
         st.error(f"Error deleting project: {e}")
         return False
 
-# Add or delete projects
-if projects == "Add New Project":
-    new_project_name = st.sidebar.text_input("Enter new project name:")
-    if st.sidebar.button("Add Project"):
-        if new_project_name:
-            st.session_state["projects"].append(new_project_name)
-            st.session_state[new_project_name] = []  # Initialize chat history
-            st.session_state["current_project"] = new_project_name  # Set as current project
-            st.rerun()
-else:
-    if st.sidebar.button("Delete Project"):
-        if delete_project(projects):
-            st.session_state["projects"].remove(projects)
-            del st.session_state[projects]
-            st.rerun()
-
 # Main content
 if st.session_state["current_project"]:
     st.title(f"Project: {st.session_state['current_project']}")
@@ -119,64 +128,22 @@ if st.session_state["current_project"]:
         if not project_context:
             project_context = [{"role": "system", "content": "You are a helpful assistant."}]
         
-        # Debug: Print the project context and request payload
-        print(f"Project Context for {st.session_state['current_project']}: {project_context}")
-        print(
-           f"Request Payload: {json.dumps({'messages': project_context + [{'content': user_input, 'role': 'user'}], 'model': 'deepseek-chat', 'max_tokens': 2048}, indent=2)}"
-        )
+        # Retrieve relevant chunks from Supabase
+        relevant_chunks = retrieve_relevant_chunks(user_input, st.session_state["current_project"])
         
-        # Call DeepSeek API
-        try:
-            response = requests.post(
-                API_URL,
-                headers={
-                    "Authorization": f"Bearer {DEEPSEEK_API_KEY}",
-                    "Content-Type": "application/json",
-                    "Accept": "application/json"
-                },
-                data=json.dumps({
-                    "messages": project_context + [{"content": user_input, "role": "user"}],
-                    "model": "deepseek-chat",
-                    "max_tokens": 2048
-                })
-            )
-            
-            # Debug: Print raw response
-            print(f"Response Status Code: {response.status_code}")
-            print(f"Response Text: {response.text}")
-            
-            if response.status_code == 200:
-                if response.text.strip():  # Check if the response body is not empty
-                    try:
-                        # Debug place for empty json response, check if choices exits
-                        try:
-                            response_data = response.json()
-                            choices = response_data.get("choices", [])
-                            if choices:
-                                response_text = choices[0].get("message", {}).get("content", "No response received.")
-                            else:
-                                response_text = "No valid choices in response."
-                        except json.JSONDecodeError as e:
-                            response_text = f"JSON Error: {e}. Raw response: {response.text}"
-                        
-                        # Save to Supabase
-                        save_chat_history("user", user_input)
-                        save_chat_history("assistant", response_text)
+        # Generate answer using DeepSeek API
+        response_text = generate_answer(user_input, relevant_chunks)
+        
+        # Save to Supabase
+        save_chat_history("user", user_input)
+        save_chat_history("assistant", response_text)
 
-                        # Update session state
-                        st.session_state[st.session_state["current_project"]].append({"role": "user", "content": user_input})
-                        st.session_state[st.session_state["current_project"]].append({"role": "assistant", "content": response_text})
+        # Update session state
+        st.session_state[st.session_state["current_project"]].append({"role": "user", "content": user_input})
+        st.session_state[st.session_state["current_project"]].append({"role": "assistant", "content": response_text})
 
-                        st.subheader("Response from DeepSeek AI:")
-                        st.write(response_text)
-                    except json.JSONDecodeError as e:
-                        st.error(f"Error decoding JSON: {e}. Raw response: {response.text}")
-                else:
-                    st.error("Empty response body received.")
-            else:
-                st.error(f"API Error: {response.status_code} - {response.text}")
-        except Exception as e:
-            st.error(f"An error occurred while calling the API: {e}")
+        st.subheader("Response from DeepSeek AI:")
+        st.write(response_text)
 
     # Display chat history
     st.subheader("Chat History")
