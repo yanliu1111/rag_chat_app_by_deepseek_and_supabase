@@ -12,17 +12,17 @@ Build RAG (Retrieval-Augmented Generation) Chat App" by integrating Deepseek V3 
 
 ## Purpose of the Project
 
-🚀 Hands-on AI & Database Integration
+### 🚀 Hands-on AI & Database Integration
 
 - Gain practical experience with modern AI models and database technologies.
 - Explore the capabilities and use cases of DeepSeek V3.
 
-🔍 Retrieval-Augmented Generation (RAG) Implementation
+### 🔍 Retrieval-Augmented Generation (RAG) Implementation
 
 - Develop a chat application using RAG for enhanced AI responses.
 - Instead of OpenAI's paid models, leverage Hugging Face's RAG model for free.
 
-⚡ Tech Stack & Development
+### ⚡ Tech Stack & Development
 
 - Frameworks & Tools:
   - Streamlit → Build and deploy the app.
@@ -33,7 +33,7 @@ Build RAG (Retrieval-Augmented Generation) Chat App" by integrating Deepseek V3 
   - Work with advanced Python features.
   - Implement unit testing towards the end.
 
-📄 PDF Handling & Embeddings
+### 📄 PDF Handling & Embeddings
 
 - Extract text from PDFs using PyMuPDF (extract_text_from_pdf function).
 - For free embedding generation:
