@@ -58,7 +58,7 @@ def save_chunks_to_supabase(chunks, embeddings, project_name):
                 "project": project_name,
                 "role": "document",
                 "content": chunk,
-                "embedding": embedding.tolist()  # Convert numpy array to list for JSON serialization
+                "embedding": embedding.tolist()
             }]).execute()
         return True
     except Exception as e:
@@ -95,13 +95,14 @@ def retrieve_relevant_chunks(question, project_name):
         similarities = []
         for msg in messages:
             embedding = np.array(msg["embedding"])
-            if embedding is not None:  # Check if embedding is not None
+            #debug Check if embedding is not None
+            if embedding is not None: 
                 similarity = np.dot(question_embedding, embedding) / (np.linalg.norm(question_embedding) * np.linalg.norm(embedding))
                 similarities.append((similarity, msg["content"]))
 
         # Sort by similarity and return the most relevant chunks
         similarities.sort(reverse=True, key=lambda x: x[0])
-        relevant_chunks = [content for _, content in similarities[:5]]  # Return top 5 relevant chunks
+        relevant_chunks = [content for _, content in similarities[:5]]
         return relevant_chunks
     except Exception as e:
         st.error(f"An error occurred while retrieving relevant chunks: {e}")

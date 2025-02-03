@@ -66,7 +66,8 @@ def load_chat_history(project_name):
             .execute()
 
         # Debugging: Check the raw response
-        print(f"Load Chat History Response: {response}")  # Add this line to see the raw response
+        # Add this line to see the raw response
+        print(f"Load Chat History Response: {response}")  
         
         messages = response.data
         if not messages:
@@ -91,7 +92,7 @@ def save_chat_history(role, content):
             "content": content
         }]).execute()
 
-        print(f"Save Chat Response: {response}")  # Debugging
+        print(f"Save Chat Response: {response}")  # debugging
 
         if response.data:
             return True
