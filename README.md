@@ -152,3 +152,22 @@ ON messages FOR ALL
 USING (true)
 WITH CHECK (true);
 ```
+
+## Demo View
+
+Upload a PDF file containing a story I generated, **recreated** from Turning Red 🐼🐾. The story includes unique names, family members, and their hobbies.
+
+After uploading the file, you can ask questions based on the PDF and receive accurate answers. All embeddings, questions, answers, and timestamps are saved in Supabase.
+
+**chat platform**
+<img 
+    style="width: 100%;"
+    src="demo.jpg" 
+    alt="roadmap">
+</img> <br>
+**supabase platform**
+<img 
+    style="width: 100%;"
+    src="demo2.jpg" 
+    alt="roadmap">
+</img> <br>
