@@ -70,11 +70,9 @@ Build RAG (Retrieval-Augmented Generation) Chat App" by integrating Deepseek V3 
 
 ## Features
 
-show check and square boxes for the following features
-
 ✅ Streamlit server setup <br>
 ✅ DeepSeek V3 API integration <br>
-✅ Main Chat area for displaying information from DeepSeek works 🐋 <br>
+✅ Main chat area for displaying information from DeepSeek's work 🐋 <br>
 ✅ Sidebar for navigation <br>
 ✅ Display chat history in the main chat area <br>
 ✅ Supabase storage setup and API integration, schema design <br>
