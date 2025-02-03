@@ -82,10 +82,9 @@ show check and square boxes for the following features
 ✅ Use the PyMuPDF library to extract text from PDF files.<br>
 ✅ Streamlit UI for uploading files <br>
 ✅ Embedding uploaded files and chunks to supabase <br>
-
-- [ ] RAG model integration
-- [ ] Ask questions and get answers from RAG model
-- [ ] Retrieve chat history from Supabase
+✅ RAG model integration <br>
+✅ Ask questions and get answers from RAG model <br>
+✅ Retrieve chat history from Supabase <br>
 
 ```bash
 Build-RAG-Chat-App/
